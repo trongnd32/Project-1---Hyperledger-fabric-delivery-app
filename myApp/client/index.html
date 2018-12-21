@@ -1,0 +1,171 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hyperledger Fabric Delivery Application</title>
+    <link rel="icon" href="favicon.png" type="image/gif">
+
+    <!-- require jquery and bootstrap scripts -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    
+    <!-- adding style here -->
+    <style type="text/css">
+      header{
+        background-color: lightgray;
+        font-size:20px;
+        padding:15px;
+      }
+      header, .form-group{
+        margin-bottom: 3%;
+      }
+      .form-group{
+        width:50%;
+      }
+      #body{
+        margin-left:3%;
+        margin-right:3%;
+      }
+      .form-control{
+        margin: 8px;
+      }
+      #right_header{
+        width:20%;
+        font-size:15px;
+        margin-right:0px;
+      }
+      #left_header{
+        margin-left:0;
+        width:40%;
+        display:inline-block;
+      } 
+      #id {
+        width:49%;
+        display: inline-block;
+      }
+      table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+      }
+      td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+      }
+      tr:nth-child(even) {
+          background-color: #dddddd;
+      }
+    </style>
+
+  </head>
+
+
+  <body ng-app="application" ng-controller="appController">
+    <header>
+      <div id="left_header">Hyperledger Fabric Delivery Application</div>
+    </header>
+
+    <div id="body">
+        <!-- Query all transaction -->
+        <div class="form-group">
+          <label>Query All Transaction</label>
+          <p><input id="queryAllTrans" type="submit" value="Query" class="btn btn-primary" ng-click="queryAllTrans()"></p>
+        </div>
+   
+        <table id="all_trans" class="table" align="center">
+  
+          <tr>
+            <th>ID</th>
+            <th>Paid?</th>
+            <th>Received?</th>
+          </tr>
+  
+          <tr ng-repeat="trans in all_trans">
+            <td>{{trans.id}}</td>
+            <td>{{trans.paid}}</td>
+            <td>{{trans.received}}</td>
+          </tr>
+        </table>
+
+
+      <!-- Query a Client -->
+      <div class="form-group">
+        <label>Query a Transaction</label><br>
+        <h5 style="color:red;margin-bottom:2%" id="error_query">Error: Please enter a valid Transaction Id</h5>
+        <h5 style="color:green;margin-bottom:2%" id="success_query">Success query</h5>
+        
+        Enter a Transaction ID: <input id="createName" class="form-control" type="text" placeholder="Ex: 3" ng-model="trans_id">
+        <input id="querySubmit" type="submit" value="Query" class="btn btn-primary" ng-click="queryTrans()">
+      </div>
+
+      <table id="query_client" class="table" align="center">
+
+        <tr>
+          <th>ID</th>
+          <th>Paid?</th>
+          <th>Received?</th>
+        </tr>
+
+        <tr>
+          <td>{{query_trans.id}}</td>
+          <td>{{query_trans.paid}}</td>
+          <td>{{query_trans.received}}</td>
+        </tr>
+      </table>
+
+      <!-- New transaction -->
+      <div class="form-group">
+        <label>New Transaction</label>
+        <h5 style="color:green;margin-bottom:2%" id="success_create">Success! Tx ID: {{create_trans}}</h5>
+        <br>
+        <form id="myForm">
+          Enter transaction id: <input class="form-control" type="text" placeholder="Ex: 11" ng-model="trans.id">
+          <!-- Enter Name: <input class="form-control" type="text" placeholder="Ex: Trong" ng-model="client.name"> -->
+          Was this pay? <input class="form-control" type="number" placeholder="1 = paid, 0 = not paid" ng-model="trans.paid">
+          Was this received? <input class="form-control" type="number" placeholder="1 = received, 0 = not received" ng-model="trans.received">
+          <!-- <input id="createSubmit" type="submit" value="Create" class="btn btn-primary" ng-click="newClient()" onclick="resetForm()">  -->
+          <button id="createSubmit" class="btn btn-primary" ng-click="newTrans()" onclick="resetForm()">Create</button>
+        </form>
+      </div>
+
+       <!-- Update state -->
+       <div class="form-group">
+        <label>Update Transaction State</label>
+        <h5 style="color:green;margin-bottom:2%" id="success_update">Success! Tx ID: {{update_state}}</h5>
+        <h5 style="color:red;margin-bottom:2%" id="error_update">Error: Please enter a valid Transaction Id</h5>
+        <br>
+        <form id="myForm2">
+          Enter transaction id: <input class="form-control" type="text" placeholder="Ex: 11" ng-model="transUpdate.id">
+          <!-- Enter Name: <input class="form-control" type="text" placeholder="Ex: Trong" ng-model="client.name"> -->
+          Was this pay? <input class="form-control" type="number" placeholder="1 = paid, 0 = not paid" ng-model="transUpdate.paid">
+          Was this received? <input class="form-control" type="number" placeholder="1 = received, 0 = not received" ng-model="transUpdate.received">
+          <!-- <input id="createSubmit" type="submit" value="Create" class="btn btn-primary" ng-click="newClient()" onclick="resetForm()">  -->
+          <button id="updateSubmit" class="btn btn-primary" ng-click="updateState()" onclick="resetForm2()">Update</button>
+        </form>
+      </div>
+
+
+      <script>
+        function resetForm() {
+            setTimeout(function(){
+              document.getElementById("myForm").reset();
+            },2000);
+          }
+            function resetForm2() {
+            setTimeout(function(){
+              document.getElementById("myForm2").reset();
+            },2000);
+          }
+        </script>
+
+
+    </div>
+  </body>
+    <!-- requiring the angular page -->
+    <script type="text/javascript" src="app.js"> </script>
+</html>
