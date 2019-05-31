@@ -1,4 +1,4 @@
-# Project-1---Hyperledger-fabric-delivery-app
+# Hyperledger-fabric-delivery-app
 ## Cài đặt
 ```
 cd myApp
